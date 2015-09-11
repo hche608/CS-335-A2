@@ -1,5 +1,6 @@
 package communityblogger.services;
 
+import java.io.InputStream;
 import java.util.Set;
 
 import javax.ws.rs.Consumes;
@@ -15,8 +16,17 @@ import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.Response;
 
+
+
+import javax.ws.rs.core.StreamingOutput;
+
+import communityblogger.domain.BlogEntry;
+import communityblogger.domain.Comment;
+import communityblogger.domain.User;
+
 // TO DO:
 // Configure the relative URI path for this resource.
+@Path("/compsci-335-blogger")
 public interface BloggerResource {
 
 	// TO DO:
@@ -42,4 +52,45 @@ public interface BloggerResource {
 	@PUT
 	@Produces("application/xml")
 	void initialiseContent();
+	
+	@POST
+	@Consumes("application/xml")
+	Response create_new_user(InputStream is);
+	
+	
+	@POST
+	@Consumes("application/xml")
+	Response create_new_blog_entry(InputStream is);
+	
+	@POST
+	@Consumes("application/xml")
+	Response create_new_comment(InputStream is);
+	
+	@GET
+	@Path("{user}")
+	@Produces("application/xml")
+	StreamingOutput retrieve_user(@PathParam("username") long username);
+	
+	@GET
+	@Path("{id}")
+	@Produces("application/xml")
+	StreamingOutput retrieve_blog_entry(@PathParam("id") long id);
+	
+	@GET
+	@Path("{id}/comments")
+	@Produces("application/xml")
+	StreamingOutput retrieve_comments(@PathParam("comment") long username);
+	
+	@GET
+	@Produces("application/xml")
+	StreamingOutput retrieve_blog_entries(InputStream is);
+	
+	@GET
+	@Produces("application/xml")
+	String follow_blog_entry(InputStream is);
+
+	
+	
+	
+	
 }
