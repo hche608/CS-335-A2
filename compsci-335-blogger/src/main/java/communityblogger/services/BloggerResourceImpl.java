@@ -18,7 +18,7 @@ import javax.ws.rs.core.StreamingOutput;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.joda.time.DateTime;
+
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
@@ -35,8 +35,10 @@ import communityblogger.domain.Comment;
  * Implementation of the BloggerResource interface.
  *
  */
-public class BloggerResourceImpl implements BloggerResource {
 
+public class BloggerResourceImpl implements BloggerResource {
+    // Setup a Logger.
+    private static Logger _logger = LoggerFactory.getLogger(BloggerResourceImpl.class);
 	/*
 	 * Possible data structures to store the domain model objects. _users is a
 	 * map whose key is username. Each User is assumed to have a unique
@@ -49,29 +51,48 @@ public class BloggerResourceImpl implements BloggerResource {
 	private Map<Long, BlogEntry> _blogEntries;
 	private AtomicLong _idCounter;
 
+	
+	
 	public BloggerResourceImpl() {
 		// TO DO:
-		// Initialise instance variables.
-		_users = new ConcurrentHashMap<String, User>();
-		_blogEntries = new ConcurrentHashMap<Long, BlogEntry>();
-		_idCounter = new AtomicLong();
-
+		// Initialise instance variables.        
+        initialiseContent();
+        reloadData();
 	}
-
+    
+    @Override
 	public void initialiseContent() {
 		// TO DO:
 		// (Re)-initialise data structures so that the Web service's state is
 		// the same same as when the Web service was initially created.
+    	_users = new ConcurrentHashMap<String, User>();
+		_blogEntries = new ConcurrentHashMap<Long, BlogEntry>();
+		_idCounter = new AtomicLong();
+    	//reloadData();    
 	}
+    
+    protected void reloadData(){
+    	_users = new ConcurrentHashMap<String, User>();
+		_blogEntries = new ConcurrentHashMap<Long, BlogEntry>();
+		_idCounter = new AtomicLong();
+        
+        // === Initialise User #1
+        User _user = new User("hche608","Chen","Hao");
+        _logger.info("Default User" + _user.toString());
+    }
 
+    @Override
 	public Response create_new_user(InputStream is) {
 		User _user = readUser(is);
 		_users.put(_user.getUsername(), _user);
-		return Response.created(URI.create("/users/" + _user.getUsername()))
+		_logger.info("Processing HTTP POST request -- create new user:" + _user.toString());
+		return Response.created(URI.create("/blogger/users/" + _user.getUsername()))
 				.build();
 	}
 
+    @Override
 	public Response create_new_blog_entry(InputStream is) {
+		_logger.debug("Processing HTTP POST request -- create new blogEntry");
 		BlogEntry _blogEntry = readEntry(is);
 		_blogEntry.setId(_idCounter.incrementAndGet());
 		_blogEntries.put(_blogEntry.getId(), _blogEntry);
@@ -79,11 +100,13 @@ public class BloggerResourceImpl implements BloggerResource {
 				URI.create("/blogEntries/" + _blogEntry.getId())).build();
 	}
 
+    @Override
 	public Response create_new_comment(InputStream is) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+    @Override
 	public StreamingOutput retrieve_user(@PathParam("username") long username) {
 		// TODO Auto-generated method stub
 		// Lookup the Parolee within the in-memory data structure.
@@ -104,16 +127,19 @@ public class BloggerResourceImpl implements BloggerResource {
 		};
 	}
 
+    @Override
 	public StreamingOutput retrieve_blog_entry(@PathParam("username") long username) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public StreamingOutput retrieve_comments(long username) {
+	@Override
+    public StreamingOutput retrieve_comments(long username) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+    @Override
 	public StreamingOutput retrieve_blog_entries(InputStream is) {
 		// TODO Auto-generated method stub
 		return null;
@@ -140,15 +166,13 @@ public class BloggerResourceImpl implements BloggerResource {
 			Document doc = builder.parse(is);
 			Element root = doc.getDocumentElement();
 			String _username = "", _lastname = "", _firstname = "";
-			if (root.getAttribute("user") != null
-					&& !root.getAttribute("user").trim().equals(""))
-				;
+			if (root.getAttribute("username") != null
+					&& !root.getAttribute("username").trim().equals(""));
+				_username = root.getAttribute("username");
 			NodeList nodes = root.getChildNodes();
 			for (int i = 0; i < nodes.getLength(); i++) {
 				Element element = (Element) nodes.item(i);
-				if (element.getTagName().equals("username")) {
-					_username = element.getTextContent();
-				} else if (element.getTagName().equals("last-name")) {
+				if (element.getTagName().equals("last-name")) {
 					_lastname = element.getTextContent();
 				} else if (element.getTagName().equals("first-name")) {
 					_firstname = element.getTextContent();

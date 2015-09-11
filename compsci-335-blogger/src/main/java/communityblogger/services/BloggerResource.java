@@ -26,7 +26,7 @@ import communityblogger.domain.User;
 
 // TO DO:
 // Configure the relative URI path for this resource.
-@Path("/compsci-335-blogger")
+@Path("/blogger")
 public interface BloggerResource {
 
 	// TO DO:
@@ -54,15 +54,18 @@ public interface BloggerResource {
 	void initialiseContent();
 	
 	@POST
+	@Path("/user")
 	@Consumes("application/xml")
 	Response create_new_user(InputStream is);
 	
 	
 	@POST
+	@Path("/blogEntry")
 	@Consumes("application/xml")
 	Response create_new_blog_entry(InputStream is);
 	
 	@POST
+	@Path("/comment")
 	@Consumes("application/xml")
 	Response create_new_comment(InputStream is);
 	

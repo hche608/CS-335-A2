@@ -17,7 +17,8 @@ public class BloggerApplication extends Application {
 		// Populate the _singletons and _classes sets with a resource instance
 		// and any component classes your application needs.
 		// Register the BloggerResource singleton to handle HTTP requests.
-		_singletons.add(new BloggerResourceImpl());
+		BloggerResourceImpl resource = new BloggerResourceImpl();
+		_singletons.add(resource);
 
 		// Register the ContextResolver class for JAXB.
 		_classes.add(BloggerResolver.class);
