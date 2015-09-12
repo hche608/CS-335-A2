@@ -1,8 +1,15 @@
-package communityblogger.domain;
+package communityblogger.dto;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlID;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /*
  * Use the Apache Commons library for implementing equals() and hasCode(). 
@@ -42,10 +49,18 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  * @author Ian Warren
  *
  */
+@XmlRootElement(name = "user")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class User {
 
+	@XmlID
+	@XmlAttribute(name = "username")
 	private String _username;
+
+	@XmlElement(name = "last-name")
 	private String _lastname;
+
+	@XmlElement(name = "first-name")
 	private String _firstname;
 
 	private Set<BlogEntry> _blogEntriesPosted;
@@ -64,12 +79,16 @@ public class User {
 	 *            - the user's first name.
 	 * 
 	 */
+	public User() {}
+        
 	public User(String username, String lastname, String firstname) {
+
 		_username = username;
 		_lastname = lastname;
 		_firstname = firstname;
 
 		// Create empty sets for BlogEntries and Comments.
+
 		_blogEntriesPosted = new HashSet<BlogEntry>();
 		_commentsPosted = new HashSet<Comment>();
 	}
@@ -189,15 +208,20 @@ public class User {
 
 		buffer.append("[User:");
 		buffer.append(" username=");
-		buffer.append(_username);
+        if(_username != null)
+		    buffer.append(_username);
 		buffer.append(", lastname=");
-		buffer.append(_lastname);
+        if(_lastname != null)
+		    buffer.append(_lastname);
 		buffer.append(", firstname=");
-		buffer.append(_firstname);
+        if(_firstname != null)
+		    buffer.append(_firstname);
 		buffer.append(", #posts=");
-		buffer.append(_blogEntriesPosted.size());
+        if(_blogEntriesPosted != null)
+		    buffer.append(_blogEntriesPosted.size());
 		buffer.append(", #comments=");
-		buffer.append(_commentsPosted.size());
+        if(_commentsPosted != null)
+		    buffer.append(_commentsPosted.size());
 
 		buffer.append("]");
 		return buffer.toString();

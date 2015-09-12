@@ -15,14 +15,7 @@ import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.Response;
-
-
-
 import javax.ws.rs.core.StreamingOutput;
-
-import communityblogger.domain.BlogEntry;
-import communityblogger.domain.Comment;
-import communityblogger.domain.User;
 
 // TO DO:
 // Configure the relative URI path for this resource.
@@ -53,47 +46,25 @@ public interface BloggerResource {
 	@Produces("application/xml")
 	void initialiseContent();
 	
+//	@POST
+//	@Path("/user")
+//	@Consumes("application/xml")
+//	Response createUser(InputStream is);
+		
+	/**
+	 * Adds a new User to the system. The state of the new User is
+	 * described by a nz.ac.auckland.parolee.dto.Parolee object.
+	 * 
+	 * @param dtoUser
+	 *            the User data included in the HTTP request body.
+	 */
 	@POST
 	@Path("/user")
 	@Consumes("application/xml")
-	Response create_new_user(InputStream is);
-	
-	
-	@POST
-	@Path("/blogEntry")
-	@Consumes("application/xml")
-	Response create_new_blog_entry(InputStream is);
-	
-	@POST
-	@Path("/comment")
-	@Consumes("application/xml")
-	Response create_new_comment(InputStream is);
+	Response createUser(communityblogger.dto.User dtoUser);
 	
 	@GET
-	@Path("{user}")
+	@Path("/user/{username}")
 	@Produces("application/xml")
-	StreamingOutput retrieve_user(@PathParam("username") long username);
-	
-	@GET
-	@Path("{id}")
-	@Produces("application/xml")
-	StreamingOutput retrieve_blog_entry(@PathParam("id") long id);
-	
-	@GET
-	@Path("{id}/comments")
-	@Produces("application/xml")
-	StreamingOutput retrieve_comments(@PathParam("comment") long username);
-	
-	@GET
-	@Produces("application/xml")
-	StreamingOutput retrieve_blog_entries(InputStream is);
-	
-	@GET
-	@Produces("application/xml")
-	String follow_blog_entry(InputStream is);
-
-	
-	
-	
-	
+	StreamingOutput retrieve_user(@PathParam("username") String username);
 }

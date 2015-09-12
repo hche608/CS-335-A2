@@ -1,8 +1,15 @@
-package communityblogger.domain;
+package communityblogger.jaxb;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlID;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /*
  * Use the Apache Commons library for implementing equals() and hasCode(). 
@@ -18,6 +25,8 @@ import java.util.Set;
  */
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+import communityblogger.domain.BlogEntry;
 
 /**
  * Class to represent users in the Community Blogger Web service. A User object
@@ -42,15 +51,32 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  * @author Ian Warren
  *
  */
+@XmlRootElement(name = "user")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class User {
-
+	
+	@XmlID
+	@XmlAttribute(name = "username")
 	private String _username;
+	
+	@XmlElement(name = "last-name")
 	private String _lastname;
+	
+	@XmlElement(name = "first-name")
 	private String _firstname;
 
 	private Set<BlogEntry> _blogEntriesPosted;
 	private Set<Comment> _commentsPosted;
 
+	protected User() {
+		// Required by JAXB for unmarshalling purposes.
+	}
+	/**
+	 * Constructs a DTO User instance. This method is intended to be called
+	 * by Web service clients when creating new User.  
+	 */
+	
+	
 	/**
 	 * Creates a User.
 	 * 
@@ -125,13 +151,13 @@ public class User {
 	 *             if the BlogEntry is already associated with some User.
 	 * 
 	 */
-	public void addBlogEntry(BlogEntry blogEntry) {
-		if (blogEntry.getAuthor() != null) {
-			throw new IllegalArgumentException();
-		}
-		blogEntry.setAuthor(this);
-		_blogEntriesPosted.add(blogEntry);
-	}
+//	public void addBlogEntry(BlogEntry blogEntry) {
+//		if (blogEntry.getAuthor() != null) {
+//			throw new IllegalArgumentException();
+//		}
+//		blogEntry.setAuthor(this);
+//		_blogEntriesPosted.add(blogEntry);
+//	}
 
 	/**
 	 * Adds a Comment to this User (the User is the author).

@@ -1,4 +1,9 @@
-package communityblogger.domain;
+package communityblogger.jaxb;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /*
  * Use the Apache Commons library for implementing equals() and hasCode(). 
@@ -42,11 +47,22 @@ import org.joda.time.DateTime;
  * @author Ian Warren
  *
  */
+@XmlRootElement(name = "comment")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Comment implements Comparable<Comment> {
 
+	@XmlElement(name = "timestamp")
 	private DateTime _timestamp;
+
+	@XmlElement(name = "content")
 	private String _content;
+
+	@XmlElement(name = "author")
 	private User _author;
+
+	protected Comment() {
+		// Required by JAXB for unmarshalling purposes.
+	}
 
 	/**
 	 * Creates a Comment object.
