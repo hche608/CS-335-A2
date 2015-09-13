@@ -12,7 +12,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.StreamingOutput;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -62,89 +61,44 @@ public class BloggerResourceImpl implements BloggerResource {
 		_logger.debug("Server reloaded.");
 	}
 
-	// TO DO:
-	// Implement BloggerResource methods for the service contract.
-//	@Override
-//	public Response createUser(InputStream is) {
-//		User _user = readUser(is);
-//		_users.put(_user.getUsername(), _user);
-//		_logger.debug("Created user:" + _user);
-//		return Response.created(URI.create("/blogger/user/" + _user.getUsername())).build();
-//	}
-	
+
 	/**
-	 * Adds a new User to the system. The state of the new User is
-	 * described by a nz.ac.auckland.parolee.dto.Parolee object.
+	 * Adds a new User to the system. The state of the new User is described by
+	 * a communityblogger.dto.User object.
 	 * 
-	 * @param dtoParolee
+	 * @param dtoUser
 	 *            the User data included in the HTTP request body.
 	 */
 	public Response createUser(communityblogger.dto.User dtoUser) {
 		_logger.debug("Read User: " + dtoUser);
 		User _user = UserMapper.toDomainModel(dtoUser);
 		_users.put(_user.getUsername(), _user);
-		
+
 		_logger.debug("Created user: " + _user);
-		return Response.created(URI.create("/blogger/user/" + _user.getUsername())).build();
+		return Response.created(URI.create("/blogger/users/" + _user.getUsername())).build();
 	}
-	
-	@Override
-	public StreamingOutput retrieve_user(@PathParam("username") String username) {
-		// TODO Auto-generated method stub
+
+	/**
+	 * Returns a particular User. The returned User is represented by a
+	 * communityblogger.dto.User object.
+	 * 
+	 * @param username
+	 *            the unique identifier of the User.
+	 * 
+	 */
+	public communityblogger.dto.User getUser(@PathParam("username") String username) {
 		// Lookup the User within the in-memory data structure.
-		_logger.debug("Lookup for user: " + username);
+		
 		final User _user = _users.get(username);
+		_logger.debug("Lookup for user: " + _user);
 		final String _username = _user.getUsername();
 		if (_username == null) {
 			// Return a HTTP 404 response if the specified User isn't found.
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}
 
-		// Return a StreamingOuput instance that the JAX-RS implementation will
-		// use set the body of the HTTP response message.
-		return new StreamingOutput() {
-			public void write(OutputStream outputStream) throws IOException, WebApplicationException {
-				outputUser(outputStream, _user);
-			}
-		};
-	}
-	
-	// Helper method to generate an XML representation of a particular User.
-	protected void outputUser(OutputStream os, User user) throws IOException {
-		PrintStream writer = new PrintStream(os);
-		writer.println("<user username=\"" + user.getUsername() + "\">");
-		writer.println("   <first-name>" + user.getFirstname() + "</first-name>");
-		writer.println("   <last-name>" + user.getLastname() + "</last-name>");
-		writer.println("</user>");
-	}
-
-	// Helper method to read an XML representation of a User, and return a
-	// corresponding User object. This method uses the org.w3c API for
-	// parsing XML. The details aren't important, and later we'll use an
-	// automated approach rather than having to do this by hand. Currently this
-	// is a minimal Web service and so we'll parse the XML by hand.
-	protected User readUser(InputStream is) {
-		try {
-			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			Document doc = builder.parse(is);
-			Element root = doc.getDocumentElement();
-			String _username = "", _lastname = "", _firstname = "";
-			if (root.getAttribute("username") != null && !root.getAttribute("username").trim().equals(""))
-				;
-			_username = root.getAttribute("username");
-			NodeList nodes = root.getChildNodes();
-			for (int i = 0; i < nodes.getLength(); i++) {
-				Element element = (Element) nodes.item(i);
-				if (element.getTagName().equals("last-name")) {
-					_lastname = element.getTextContent();
-				} else if (element.getTagName().equals("first-name")) {
-					_firstname = element.getTextContent();
-				}
-			}
-			return new User(_username, _lastname, _firstname);
-		} catch (Exception e) {
-			throw new WebApplicationException(e, Response.Status.BAD_REQUEST);
-		}
-
+		// Convert the full User to a short User.
+		communityblogger.dto.User dtoUser = UserMapper.toDto(_user);
+		return dtoUser;
 	}
 }

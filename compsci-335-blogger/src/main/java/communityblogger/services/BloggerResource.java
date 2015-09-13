@@ -1,6 +1,5 @@
 package communityblogger.services;
 
-import java.io.InputStream;
 import java.util.Set;
 
 import javax.ws.rs.Consumes;
@@ -15,7 +14,6 @@ import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.StreamingOutput;
 
 // TO DO:
 // Configure the relative URI path for this resource.
@@ -25,7 +23,7 @@ public interface BloggerResource {
 	// TO DO:
 	// Define one method for each of the operations in the Community Blogger
 	// Web service contract. In each case, use appropriate JAX-RS annotations
-	// to specify the URI pattern, media  type and HTTP method.
+	// to specify the URI pattern, media type and HTTP method.
 	//
 	// The service contract comprises the 8 operations:
 	// - Create user
@@ -37,23 +35,17 @@ public interface BloggerResource {
 	// - Retrieve blog entries
 	// - Follow blog entry
 
-	
 	/**
-	 * Useful operation to initialise the state of the Web service. This operation 
-	 * can be invoked prior to executing each unit test.
+	 * Useful operation to initialise the state of the Web service. This
+	 * operation can be invoked prior to executing each unit test.
 	 */
 	@PUT
 	@Produces("application/xml")
 	void initialiseContent();
-	
-//	@POST
-//	@Path("/user")
-//	@Consumes("application/xml")
-//	Response createUser(InputStream is);
-		
+
 	/**
-	 * Adds a new User to the system. The state of the new User is
-	 * described by a nz.ac.auckland.parolee.dto.Parolee object.
+	 * Adds a new User to the system. The state of the new User is described by
+	 * a nz.ac.auckland.parolee.dto.Parolee object.
 	 * 
 	 * @param dtoUser
 	 *            the User data included in the HTTP request body.
@@ -62,9 +54,17 @@ public interface BloggerResource {
 	@Path("/user")
 	@Consumes("application/xml")
 	Response createUser(communityblogger.dto.User dtoUser);
-	
+
+	/**
+	 * Returns a particular Parolee. The returned Parolee is represented by a
+	 * nz.ac.auckland.parolee.dto.Parolee object.
+	 * 
+	 * @param id
+	 *            the unique identifier of the Parolee.
+	 * 
+	 */
 	@GET
-	@Path("/user/{username}")
+	@Path("/users/{username}")
 	@Produces("application/xml")
-	StreamingOutput retrieve_user(@PathParam("username") String username);
+	communityblogger.dto.User getUser(@PathParam("username") String username);
 }

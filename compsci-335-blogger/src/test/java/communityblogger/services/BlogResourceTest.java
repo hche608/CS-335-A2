@@ -69,6 +69,7 @@ public class BlogResourceTest {
 	 public void addUser() {
 	 User _dto_user = new User("test","L Name","F Name");
 	
+	 _logger.info("Creating a new User ...");
 	 Response response = _client
 	 .target(WEB_SERVICE_URI + "/user").request()
 	 .post(Entity.xml(_dto_user));
@@ -103,7 +104,7 @@ public class BlogResourceTest {
 		// Use ClientBuilder to create a new client that can be used to create
 		// connections to the Web service.
 
-		_logger.info("Creating a new Parolee ...");
+		_logger.info("Creating a new User ...");
 
 		// Create a XML representation for a new User.
 		String xml = "<user username=\"ml\">" + "<first-name>Mark</first-name>" + "<last-name>Lundy</last-name>"
