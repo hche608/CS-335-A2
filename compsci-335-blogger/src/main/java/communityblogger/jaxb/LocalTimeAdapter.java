@@ -1,4 +1,4 @@
-package nz.ac.auckland.parolee.jaxb;
+package communityblogger.jaxb;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 

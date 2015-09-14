@@ -23,6 +23,7 @@ import org.w3c.dom.NodeList;
 
 import communityblogger.domain.BlogEntry;
 import communityblogger.domain.User;
+import communityblogger.dto.Comment;
 
 /**
  * Implementation of the BloggerResource interface.
@@ -100,5 +101,35 @@ public class BloggerResourceImpl implements BloggerResource {
 		// Convert the full User to a short User.
 		communityblogger.dto.User dtoUser = UserMapper.toDto(_user);
 		return dtoUser;
+	}
+
+	@Override
+	public Response createEntry(BlogEntry entry) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public BlogEntry getEntry(String username) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Response createComment(Comment dtoEntry) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public BlogEntry getComment(String username) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public BlogEntry getEntries() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

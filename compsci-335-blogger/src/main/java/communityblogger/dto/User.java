@@ -11,6 +11,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 
+
 /*
  * Use the Apache Commons library for implementing equals() and hasCode(). 
  * Apache Commons provides utility classes that simplify the implementation of 
@@ -25,6 +26,8 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+import communityblogger.domain.BlogEntry;
 
 /**
  * Class to represent users in the Community Blogger Web service. A User object
@@ -144,13 +147,13 @@ public class User {
 	 *             if the BlogEntry is already associated with some User.
 	 * 
 	 */
-	public void addBlogEntry(BlogEntry blogEntry) {
-		if (blogEntry.getAuthor() != null) {
-			throw new IllegalArgumentException();
-		}
-		blogEntry.setAuthor(this);
-		_blogEntriesPosted.add(blogEntry);
-	}
+//	public void addBlogEntry(BlogEntry blogEntry) {
+//		if (blogEntry.getAuthor() != null) {
+//			throw new IllegalArgumentException();
+//		}
+//		blogEntry.setAuthor(this);
+//		_blogEntriesPosted.add(blogEntry);
+//	}
 
 	/**
 	 * Adds a Comment to this User (the User is the author).
