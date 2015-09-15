@@ -81,7 +81,6 @@ public class BlogEntry {
 	@XmlElement(name = "author")
 	@XmlJavaTypeAdapter(communityblogger.jaxb.UserAdapter.class)  
 	private User _author;
-	@XmlElement(name = "comments")
 	private Set<Comment> _comments;
 
 	/**

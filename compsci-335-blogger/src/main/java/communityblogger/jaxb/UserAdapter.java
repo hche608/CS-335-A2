@@ -18,7 +18,6 @@ public class UserAdapter extends XmlAdapter<String, User> {
 			return null;
 		}
 		return null;
-
 	}
 
 	@Override
@@ -28,5 +27,4 @@ public class UserAdapter extends XmlAdapter<String, User> {
 		}
 		return _user.getUsername();
 	}
-
 }

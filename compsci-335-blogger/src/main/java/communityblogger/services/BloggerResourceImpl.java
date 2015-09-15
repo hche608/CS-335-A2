@@ -2,10 +2,10 @@ package communityblogger.services;
 
 import java.net.URI;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import communityblogger.domain.BlogEntry;
+import communityblogger.domain.Comment;
 import communityblogger.domain.User;
 
 import org.joda.time.DateTime;
@@ -63,6 +64,7 @@ public class BloggerResourceImpl implements BloggerResource {
 	 *            the User data included in the HTTP request body.
 	 */
 	public Response createUser(communityblogger.dto.User dtoUser) {
+		_logger.debug("....................................................................................");
 		_logger.debug("Read User: " + dtoUser);
 		User _user = UserMapper.toDomainModel(dtoUser);
 		_users.put(_user.getUsername(), _user);
@@ -82,7 +84,7 @@ public class BloggerResourceImpl implements BloggerResource {
 	 */
 	public communityblogger.dto.User getUser(String username) {
 		// Lookup the User within the in-memory data structure.
-
+		_logger.debug("....................................................................................");
 		final User _user = _users.get(username);
 		_logger.debug("Lookup for user: " + _user);
 		final String _username = _user.getUsername();
@@ -98,7 +100,7 @@ public class BloggerResourceImpl implements BloggerResource {
 
 	public Response createEntry(String username, BlogEntry _entry) {
 		// Lookup the User within the in-memory data structure.
-
+		_logger.debug("....................................................................................");
 		User _user = _users.get(username);
 		_logger.debug("Lookup for user: " + _user);
 		final String _username = _user.getUsername();
@@ -117,9 +119,9 @@ public class BloggerResourceImpl implements BloggerResource {
 				URI.create("/blogger/blogEntries/" + _entry.getId())).build();
 	}
 
-	public BlogEntry getEntry(@PathParam("id") long id) {
-		// Lookup the User within the in-memory data structure.
-
+	public BlogEntry getEntry(long id) {
+		// Lookup the Entry within the in-memory data structure.
+		_logger.debug("....................................................................................");
 		_logger.debug("Lookup for the Entry with id: " + id);
 
 		final BlogEntry _entry = _blogEntries.get(id);
@@ -129,19 +131,59 @@ public class BloggerResourceImpl implements BloggerResource {
 		}
 		return _entry;
 	}
-	//
-	// @Override
-	// public Response createComment(Comment dtoEntry) {
-	// // TODO Auto-generated method stub
-	// return null;
-	// }
-	//
-	// @Override
-	// public BlogEntry getComment(String username) {
-	// // TODO Auto-generated method stub
-	// return null;
-	// }
-	//
+
+	public Response createComment(String username, long id,
+			communityblogger.dto.Comment dtoComment) {
+		// Lookup the User within the in-memory data structure.
+		_logger.debug("....................................................................................");
+		User _user = _users.get(username);
+		_logger.debug("Lookup for user: " + _user);
+		final String _username = _user.getUsername();
+		if (_username == null) {
+			// Return a HTTP 404 response if the specified User isn't found.
+			throw new WebApplicationException(Response.Status.NOT_FOUND);
+		}
+
+		// Lookup the Entry with in the in-memory data structure.
+		_logger.debug("Lookup for the Entry with id: " + id);
+
+		BlogEntry _entry = _blogEntries.get(id);
+		if (_entry == null) {
+			// Return a HTTP 404 response if the specified User isn't found.
+			throw new WebApplicationException(Response.Status.NOT_FOUND);
+		}
+		// Convert data to object
+		Comment _comment = CommentMapper.toDomainModel(dtoComment);
+		// set time-stamp
+		_comment.setTimestamp(DateTime.now());
+
+		_logger.debug("Read Comment: " + _comment);
+		// add comment to entry and gives it a author
+		_entry.addComment(_comment);
+		_user.addComment(_comment);
+
+		_logger.debug("Created Comment: " + _comment);
+		return Response.created(
+				URI.create("/blogger/blogEntries/" + id + "/comments")).build();
+
+	}
+
+	public Set<communityblogger.dto.Comment> getComments(long id) {
+		// Lookup the Entry within the in-memory data structure.
+
+		_logger.debug("Lookup for the Entry with id: " + id);
+
+		final BlogEntry _entry = _blogEntries.get(id);
+		if (_entry == null) {
+			// Return a HTTP 404 response if the specified User isn't found.
+			throw new WebApplicationException(Response.Status.NOT_FOUND);
+		}
+		// Convert the full User to a short User.
+		Set<communityblogger.dto.Comment> dtoComments = CommentMapper
+				.toDto(_entry.getComments());
+		return dtoComments;
+	}
+
 	// @Override
 	// public BlogEntry getEntries() {
 	// // TODO Auto-generated method stub
