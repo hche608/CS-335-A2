@@ -69,10 +69,10 @@ public interface BloggerResource {
 	@Path("/users/{username}")
 	@Produces("application/xml")
 	communityblogger.dto.User getUser(@PathParam("username") String username);
-	
+
 	/**
-	 * Adds a new Entry to the system. The state of the new Entry is described by
-	 * a communityblogger.dto.BlogEntry object.
+	 * Adds a new Entry to the system. The state of the new Entry is described
+	 * by a communityblogger.dto.BlogEntry object.
 	 * 
 	 * @param Entry
 	 *            the Entry data included in the HTTP request body.
@@ -81,55 +81,56 @@ public interface BloggerResource {
 	@Path("/blogEntries")
 	@Consumes("application/xml")
 	Response createEntry(BlogEntry Entry);
-//
-//	/**
-//	 * Returns a particular Entry. The returned Entry is represented by a
-//	 * communityblogger.dto.BlogEntry object.
-//	 * 
-//	 * @param id
-//	 *            the unique identifier of the Entry.
-//	 * 
-//	 */
-//	@GET
-//	@Path("/blogEntries/{id}")
-//	@Produces("application/xml")
-//	BlogEntry getEntry(@PathParam("username") String username);
-//	
-//	/**
-//	 * Adds a new Comment to the system. The state of the new Comment is described by
-//	 * a communityblogger.dto.Comment object.
-//	 * 
-//	 * @param dtoComment
-//	 *            the Comment data included in the HTTP request body.
-//	 */
-//	@POST
-//	@Path("/comments")
-//	@Consumes("application/xml")
-//	Response createComment(communityblogger.dto.Comment dtoEntry);
-//
-//	/**
-//	 * Returns a particular Comment. The returned Comment is represented by a
-//	 * communityblogger.dto.Comment object.
-//	 * 
-//	 * @param id
-//	 *            the unique identifier of the Comment.
-//	 * 
-//	 */
-//	@GET
-//	@Path("/blogEntries/{id}/comments/{id}")
-//	@Produces("application/xml")
-//	BlogEntry getComment(@PathParam("username") String username);
-//	
-//	/**
-//	 * Returns all particular Entries. The returned Entry is represented by a
-//	 * communityblogger.dto.BlogEntry object.
-//	 * 
-//	 * @param id
-//	 *            the unique identifier of the Entry.
-//	 * 
-//	 */
-//	@GET
-//	@Path("/blogEntries")
-//	@Produces("application/xml")
-//	BlogEntry getEntries();
+
+	/**
+	 * Returns a particular Entry. The returned Entry is represented by a
+	 * communityblogger.dto.BlogEntry object.
+	 * 
+	 * @param id
+	 *            the unique identifier of the Entry.
+	 * 
+	 */
+	@GET
+	@Path("/blogEntries/{id}")
+	@Produces("application/xml")
+	BlogEntry getEntry(@PathParam("id") long id);
+	//
+	// /**
+	// * Adds a new Comment to the system. The state of the new Comment is
+	// described by
+	// * a communityblogger.dto.Comment object.
+	// *
+	// * @param dtoComment
+	// * the Comment data included in the HTTP request body.
+	// */
+	// @POST
+	// @Path("/comments")
+	// @Consumes("application/xml")
+	// Response createComment(communityblogger.dto.Comment dtoEntry);
+	//
+	// /**
+	// * Returns a particular Comment. The returned Comment is represented by a
+	// * communityblogger.dto.Comment object.
+	// *
+	// * @param id
+	// * the unique identifier of the Comment.
+	// *
+	// */
+	// @GET
+	// @Path("/blogEntries/{id}/comments/{id}")
+	// @Produces("application/xml")
+	// BlogEntry getComment(@PathParam("username") String username);
+	//
+	// /**
+	// * Returns all particular Entries. The returned Entry is represented by a
+	// * communityblogger.dto.BlogEntry object.
+	// *
+	// * @param id
+	// * the unique identifier of the Entry.
+	// *
+	// */
+	// @GET
+	// @Path("/blogEntries")
+	// @Produces("application/xml")
+	// BlogEntry getEntries();
 }

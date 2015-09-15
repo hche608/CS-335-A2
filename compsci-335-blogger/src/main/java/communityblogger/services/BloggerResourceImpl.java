@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import communityblogger.domain.BlogEntry;
 import communityblogger.domain.User;
 
+import org.joda.time.DateTime;
+
 /**
  * Implementation of the BloggerResource interface.
  *
@@ -94,37 +96,45 @@ public class BloggerResourceImpl implements BloggerResource {
 		communityblogger.dto.User dtoUser = UserMapper.toDto(_user);
 		return dtoUser;
 	}
-	
-	@Override
+
 	public Response createEntry(BlogEntry _entry) {
 		_logger.debug("Read Entry: " + _entry);
 		_entry.setId(_idCounter.incrementAndGet());
+		_entry.setTimePosted(DateTime.now());
 		_blogEntries.put(_entry.getId(), _entry);
 		_logger.debug("Created entry: " + _entry);
-		return Response.created(URI.create("/blogger/blogEntries/" + _entry.getId())).build();
+		return Response.created(
+				URI.create("/blogger/blogEntries/" + _entry.getId())).build();
 	}
-//
-//	@Override
-//	public BlogEntry getEntry(String username) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-//
-//	@Override
-//	public Response createComment(Comment dtoEntry) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-//
-//	@Override
-//	public BlogEntry getComment(String username) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-//
-//	@Override
-//	public BlogEntry getEntries() {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
+
+	public BlogEntry getEntry(@PathParam("id") long id) {
+		// Lookup the User within the in-memory data structure.
+
+		_logger.debug("Lookup for the Entry with id: " + id);
+
+		final BlogEntry _entry = _blogEntries.get(id);
+		if (_entry == null) {
+			// Return a HTTP 404 response if the specified User isn't found.
+			throw new WebApplicationException(Response.Status.NOT_FOUND);
+		}
+		return _entry;
+	}
+	//
+	// @Override
+	// public Response createComment(Comment dtoEntry) {
+	// // TODO Auto-generated method stub
+	// return null;
+	// }
+	//
+	// @Override
+	// public BlogEntry getComment(String username) {
+	// // TODO Auto-generated method stub
+	// return null;
+	// }
+	//
+	// @Override
+	// public BlogEntry getEntries() {
+	// // TODO Auto-generated method stub
+	// return null;
+	// }
 }

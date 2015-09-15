@@ -2,6 +2,9 @@ package communityblogger.services;
 
 import static org.junit.Assert.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -14,11 +17,13 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import communityblogger.domain.BlogEntry;
 import communityblogger.dto.User;
 
 public class BlogResourceTestEntry {
 
-	private Logger _logger = LoggerFactory.getLogger(BlogResourceTestEntry.class);
+	private Logger _logger = LoggerFactory
+			.getLogger(BlogResourceTestEntry.class);
 
 	private static final String WEB_SERVICE_URI = "http://localhost:10000/services/blogger";
 
@@ -48,42 +53,39 @@ public class BlogResourceTestEntry {
 		// timestamps. Joda's Datetime class has only millisecond precision,
 		// so pause so that test-generated timestamps are actually later than
 		// timestamped values held by the Web service.
-		
-		 User _dto_user = new User("test1","hello","world");
-			
-		 _logger.info("Creating a new User ...");
-		 response = _client
-		 .target(WEB_SERVICE_URI + "/user").request()
-		 .post(Entity.xml(_dto_user));
-		 if (response.getStatus() != 201) {
-		 _logger.error("Failed to create User; Web service responded with: " +
-		 response.getStatus());
-		 fail("Failed to create new User");
-		 }
-		
-		 String location = response.getLocation().toString();
-		 _logger.info("URI for new User: " + location);
-		
-		 response.close();
-		 
-		 _dto_user = new User("test2","Chen","Hao");
-			
-		 _logger.info("Creating a new User ...");
-		 response = _client
-		 .target(WEB_SERVICE_URI + "/user").request()
-		 .post(Entity.xml(_dto_user));
-		 if (response.getStatus() != 201) {
-		 _logger.error("Failed to create User; Web service responded with: " +
-		 response.getStatus());
-		 fail("Failed to create new User");
-		 }
-		
-		 location = response.getLocation().toString();
-		 _logger.info("URI for new User: " + location);
-		
-		 response.close();
-		
-		
+
+		User _dto_user = new User("hw", "hello", "world");
+
+		_logger.info("Creating a new User ...");
+		response = _client.target(WEB_SERVICE_URI + "/users").request()
+				.post(Entity.xml(_dto_user));
+		if (response.getStatus() != 201) {
+			_logger.error("Failed to create User; Web service responded with: "
+					+ response.getStatus());
+			fail("Failed to create new User");
+		}
+
+		String location = response.getLocation().toString();
+		_logger.info("URI for new User: " + location);
+
+		response.close();
+
+		_dto_user = new User("ch", "Chen", "Hao");
+
+		_logger.info("Creating a new User ...");
+		response = _client.target(WEB_SERVICE_URI + "/users").request()
+				.post(Entity.xml(_dto_user));
+		if (response.getStatus() != 201) {
+			_logger.error("Failed to create User; Web service responded with: "
+					+ response.getStatus());
+			fail("Failed to create new User");
+		}
+
+		location = response.getLocation().toString();
+		_logger.info("URI for new User: " + location);
+
+		response.close();
+
 		try {
 			Thread.sleep(3);
 		} catch (InterruptedException e) {
@@ -101,11 +103,69 @@ public class BlogResourceTestEntry {
 	/**
 	 * Tests that the Web service can create a new User.
 	 */
-	 @Test
-	 public void addEntry() {
+	@Test
+	public void addEntry() {
+		BlogEntry _entry = new BlogEntry("hello world!");
+		_logger.info("Creating a new Entry without time ...");
 
-	
+		Response response = _client.target(WEB_SERVICE_URI + "/blogEntries")
+				.request().post(Entity.xml(_entry));
+		if (response.getStatus() != 201) {
+			_logger.error("Failed to create Entry; Web service responded with: "
+					+ response.getStatus());
+			fail("Failed to create new Entry");
+		}
 
-	
-	 }
+		String location = response.getLocation().toString();
+		_logger.info("URI for new Entry: " + location);
+
+		response.close();
+
+		// Query the Web service for the new User.
+		BlogEntry entryFromService = _client.target(location).request()
+				.accept("application/xml").get(BlogEntry.class);
+
+		// The original local User object (_user) should have a value equal
+		// to that of the User object representing User that is later
+		// queried from the Web service. The only exception is the value
+		// returned by getId(), because the Web service assigns this when it
+		// creates a User.
+		assertEquals(_entry.getContent(), entryFromService.getContent());
+		
+		// Case2
+		Set<String> _keywords = new HashSet<String>();
+		_keywords.add("This");
+		_keywords.add("is");
+		_keywords.add("a");
+		_keywords.add("key");
+		_keywords.add("word");
+		_entry = new BlogEntry("hello world!", _keywords);
+		_logger.info("Creating a new Entry without time ...");
+
+		response = _client.target(WEB_SERVICE_URI + "/blogEntries")
+				.request().post(Entity.xml(_entry));
+		if (response.getStatus() != 201) {
+			_logger.error("Failed to create Entry; Web service responded with: "
+					+ response.getStatus());
+			fail("Failed to create new Entry");
+		}
+
+		location = response.getLocation().toString();
+		_logger.info("URI for new Entry: " + location);
+
+		response.close();
+
+		// Query the Web service for the new User.
+		entryFromService = _client.target(location).request()
+				.accept("application/xml").get(BlogEntry.class);
+
+		// The original local User object (_user) should have a value equal
+		// to that of the User object representing User that is later
+		// queried from the Web service. The only exception is the value
+		// returned by getId(), because the Web service assigns this when it
+		// creates a User.
+		assertEquals(_entry.getContent(), entryFromService.getContent());
+		
+		
+	}
 }
