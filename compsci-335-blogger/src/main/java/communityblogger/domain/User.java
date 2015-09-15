@@ -190,20 +190,15 @@ public class User {
 
 		buffer.append("[User:");
 		buffer.append(" username=");
-		if (_username != null)
-			buffer.append(_username);
+		buffer.append(_username);
 		buffer.append(", lastname=");
-		if (_lastname != null)
-			buffer.append(_lastname);
+		buffer.append(_lastname);
 		buffer.append(", firstname=");
-		if (_firstname != null)
-			buffer.append(_firstname);
+		buffer.append(_firstname);
 		buffer.append(", #posts=");
-		if (_blogEntriesPosted != null)
-			buffer.append(_blogEntriesPosted.size());
+		buffer.append(_blogEntriesPosted.size());
 		buffer.append(", #comments=");
-		if (_commentsPosted != null)
-			buffer.append(_commentsPosted.size());
+		buffer.append(_commentsPosted.size());
 
 		buffer.append("]");
 		return buffer.toString();

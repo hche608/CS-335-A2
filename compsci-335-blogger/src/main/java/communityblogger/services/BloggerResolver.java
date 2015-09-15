@@ -15,7 +15,7 @@ public class BloggerResolver implements ContextResolver<JAXBContext> {
 	// Add to the _classes array the classes whose object are to be marshalled/
 	// unmarshalled to/from XML. Objects of these class will be exchanged by
 	// clients and your Web service.
-	private Class<?>[] _classes = { User.class };
+	private Class<?>[] _classes = { BlogEntry.class, Comment.class, User.class };
 
 	public BloggerResolver() {
 		try {
