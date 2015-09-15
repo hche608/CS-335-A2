@@ -1,16 +1,11 @@
 package communityblogger.dto;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
-
 
 /*
  * Use the Apache Commons library for implementing equals() and hasCode(). 
@@ -26,8 +21,6 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-
-import communityblogger.domain.BlogEntry;
 
 /**
  * Class to represent users in the Community Blogger Web service. A User object
@@ -66,9 +59,6 @@ public class User {
 	@XmlElement(name = "first-name")
 	private String _firstname;
 
-	private Set<BlogEntry> _blogEntriesPosted;
-	private Set<Comment> _commentsPosted;
-
 	/**
 	 * Creates a User.
 	 * 
@@ -82,18 +72,15 @@ public class User {
 	 *            - the user's first name.
 	 * 
 	 */
-	public User() {}
-        
+	public User() {
+	}
+
 	public User(String username, String lastname, String firstname) {
 
 		_username = username;
 		_lastname = lastname;
 		_firstname = firstname;
 
-		// Create empty sets for BlogEntries and Comments.
-
-		_blogEntriesPosted = new HashSet<BlogEntry>();
-		_commentsPosted = new HashSet<Comment>();
 	}
 
 	/**
@@ -121,61 +108,6 @@ public class User {
 	}
 
 	/**
-	 * Returns the set of blog entries posted by this User.
-	 */
-	public Set<BlogEntry> getBlogEntries() {
-		return Collections.unmodifiableSet(_blogEntriesPosted);
-	}
-
-	/**
-	 * Returns the set of comments posted by this User.
-	 */
-	public Set<Comment> getComments() {
-		return Collections.unmodifiableSet(_commentsPosted);
-	}
-
-	/**
-	 * Adds a BlogEntry to this User (the User is the author).
-	 * 
-	 * This method ensures that the BlogEntry object stores a link back to this
-	 * User.
-	 * 
-	 * @param blogEntry
-	 *            the BlogEntry that this User has posted.
-	 * 
-	 * @throws IllegalArgumentException
-	 *             if the BlogEntry is already associated with some User.
-	 * 
-	 */
-//	public void addBlogEntry(BlogEntry blogEntry) {
-//		if (blogEntry.getAuthor() != null) {
-//			throw new IllegalArgumentException();
-//		}
-//		blogEntry.setAuthor(this);
-//		_blogEntriesPosted.add(blogEntry);
-//	}
-
-	/**
-	 * Adds a Comment to this User (the User is the author).
-	 * 
-	 * This method ensures that the Comment object stores a link back to this
-	 * User.
-	 * 
-	 * @param comment
-	 *            the Comment that this User has posted.
-	 * @throws IllegalArgumentException
-	 *             if the Comment is already associated with some User.
-	 * 
-	 */
-	public void addComment(Comment comment) {
-		if (comment.getAuthor() != null) {
-			throw new IllegalArgumentException();
-		}
-		_commentsPosted.add(comment);
-		comment.setAuthor(this);
-	}
-
-	/**
 	 * Retursn true if this User object is equal in value to the method
 	 * argument.
 	 * 
@@ -188,7 +120,8 @@ public class User {
 			return true;
 
 		User rhs = (User) obj;
-		return new EqualsBuilder().append(_username, rhs._username).append(_lastname, rhs._lastname)
+		return new EqualsBuilder().append(_username, rhs._username)
+				.append(_lastname, rhs._lastname)
 				.append(_firstname, rhs._firstname).isEquals();
 	}
 
@@ -198,7 +131,8 @@ public class User {
 	 */
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder(17, 31).append(_username).append(_lastname).append(_firstname).toHashCode();
+		return new HashCodeBuilder(17, 31).append(_username).append(_lastname)
+				.append(_firstname).toHashCode();
 	}
 
 	/**
@@ -211,21 +145,14 @@ public class User {
 
 		buffer.append("[User:");
 		buffer.append(" username=");
-        if(_username != null)
-		    buffer.append(_username);
+		if (_username != null)
+			buffer.append(_username);
 		buffer.append(", lastname=");
-        if(_lastname != null)
-		    buffer.append(_lastname);
+		if (_lastname != null)
+			buffer.append(_lastname);
 		buffer.append(", firstname=");
-        if(_firstname != null)
-		    buffer.append(_firstname);
-		buffer.append(", #posts=");
-        if(_blogEntriesPosted != null)
-		    buffer.append(_blogEntriesPosted.size());
-		buffer.append(", #comments=");
-        if(_commentsPosted != null)
-		    buffer.append(_commentsPosted.size());
-
+		if (_firstname != null)
+			buffer.append(_firstname);
 		buffer.append("]");
 		return buffer.toString();
 	}

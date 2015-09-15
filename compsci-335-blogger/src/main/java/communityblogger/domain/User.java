@@ -43,7 +43,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  *
  */
 public class User {
-
 	private String _username;
 	private String _lastname;
 	private String _firstname;
@@ -166,7 +165,8 @@ public class User {
 			return true;
 
 		User rhs = (User) obj;
-		return new EqualsBuilder().append(_username, rhs._username).append(_lastname, rhs._lastname)
+		return new EqualsBuilder().append(_username, rhs._username)
+				.append(_lastname, rhs._lastname)
 				.append(_firstname, rhs._firstname).isEquals();
 	}
 
@@ -176,7 +176,8 @@ public class User {
 	 */
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder(17, 31).append(_username).append(_lastname).append(_firstname).toHashCode();
+		return new HashCodeBuilder(17, 31).append(_username).append(_lastname)
+				.append(_firstname).toHashCode();
 	}
 
 	/**
@@ -189,15 +190,20 @@ public class User {
 
 		buffer.append("[User:");
 		buffer.append(" username=");
-		buffer.append(_username);
+		if (_username != null)
+			buffer.append(_username);
 		buffer.append(", lastname=");
-		buffer.append(_lastname);
+		if (_lastname != null)
+			buffer.append(_lastname);
 		buffer.append(", firstname=");
-		buffer.append(_firstname);
+		if (_firstname != null)
+			buffer.append(_firstname);
 		buffer.append(", #posts=");
-		buffer.append(_blogEntriesPosted.size());
+		if (_blogEntriesPosted != null)
+			buffer.append(_blogEntriesPosted.size());
 		buffer.append(", #comments=");
-		buffer.append(_commentsPosted.size());
+		if (_commentsPosted != null)
+			buffer.append(_commentsPosted.size());
 
 		buffer.append("]");
 		return buffer.toString();

@@ -58,24 +58,20 @@ import org.joda.time.DateTime;
  * @author Ian Warren
  *
  */
+
 @XmlRootElement(name = "blogEntry")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class BlogEntry {
-
 	@XmlAttribute(name = "id")
 	private Long _id;
-
 	@XmlElement(name = "timestamp")
 	private DateTime _timestamp;
-
 	@XmlElement(name = "content")
 	private String _content;
-
 	private Set<String> _keywords;
-
-	@XmlElement(name = "author")
+	@XmlElement(name = "user")
 	private User _author;
-
+	@XmlElement(name = "comments")
 	private Set<Comment> _comments;
 
 	/**

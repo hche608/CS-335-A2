@@ -43,7 +43,6 @@ import org.joda.time.DateTime;
  *
  */
 public class Comment implements Comparable<Comment> {
-
 	private DateTime _timestamp;
 	private String _content;
 	private User _author;
@@ -128,7 +127,8 @@ public class Comment implements Comparable<Comment> {
 			return true;
 
 		Comment rhs = (Comment) obj;
-		return new EqualsBuilder().append(_content, rhs._content).append(_timestamp, rhs._timestamp)
+		return new EqualsBuilder().append(_content, rhs._content)
+				.append(_timestamp, rhs._timestamp)
 				.append(_author, rhs._author).isEquals();
 	}
 
@@ -138,7 +138,8 @@ public class Comment implements Comparable<Comment> {
 	 */
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder(17, 31).append(_content).append(_timestamp).append(_author).toHashCode();
+		return new HashCodeBuilder(17, 31).append(_content).append(_timestamp)
+				.append(_author).toHashCode();
 	}
 
 	/**

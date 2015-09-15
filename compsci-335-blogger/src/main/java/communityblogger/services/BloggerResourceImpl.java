@@ -1,29 +1,19 @@
 package communityblogger.services;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.net.URI;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 import communityblogger.domain.BlogEntry;
 import communityblogger.domain.User;
-import communityblogger.dto.Comment;
 
 /**
  * Implementation of the BloggerResource interface.
@@ -32,7 +22,8 @@ import communityblogger.dto.Comment;
 public class BloggerResourceImpl implements BloggerResource {
 
 	// Setup a Logger.
-	private static Logger _logger = LoggerFactory.getLogger(BloggerResourceImpl.class);
+	private static Logger _logger = LoggerFactory
+			.getLogger(BloggerResourceImpl.class);
 
 	/*
 	 * Possible data structures to store the domain model objects. _users is a
@@ -62,7 +53,6 @@ public class BloggerResourceImpl implements BloggerResource {
 		_logger.debug("Server reloaded.");
 	}
 
-
 	/**
 	 * Adds a new User to the system. The state of the new User is described by
 	 * a communityblogger.dto.User object.
@@ -76,7 +66,8 @@ public class BloggerResourceImpl implements BloggerResource {
 		_users.put(_user.getUsername(), _user);
 
 		_logger.debug("Created user: " + _user);
-		return Response.created(URI.create("/blogger/users/" + _user.getUsername())).build();
+		return Response.created(
+				URI.create("/blogger/users/" + _user.getUsername())).build();
 	}
 
 	/**
@@ -87,9 +78,10 @@ public class BloggerResourceImpl implements BloggerResource {
 	 *            the unique identifier of the User.
 	 * 
 	 */
-	public communityblogger.dto.User getUser(@PathParam("username") String username) {
+	public communityblogger.dto.User getUser(
+			@PathParam("username") String username) {
 		// Lookup the User within the in-memory data structure.
-		
+
 		final User _user = _users.get(username);
 		_logger.debug("Lookup for user: " + _user);
 		final String _username = _user.getUsername();
@@ -102,34 +94,37 @@ public class BloggerResourceImpl implements BloggerResource {
 		communityblogger.dto.User dtoUser = UserMapper.toDto(_user);
 		return dtoUser;
 	}
-
+	
 	@Override
-	public Response createEntry(BlogEntry entry) {
-		// TODO Auto-generated method stub
-		return null;
+	public Response createEntry(BlogEntry _entry) {
+		_logger.debug("Read Entry: " + _entry);
+		_entry.setId(_idCounter.incrementAndGet());
+		_blogEntries.put(_entry.getId(), _entry);
+		_logger.debug("Created entry: " + _entry);
+		return Response.created(URI.create("/blogger/blogEntries/" + _entry.getId())).build();
 	}
-
-	@Override
-	public BlogEntry getEntry(String username) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Response createComment(Comment dtoEntry) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public BlogEntry getComment(String username) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public BlogEntry getEntries() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//
+//	@Override
+//	public BlogEntry getEntry(String username) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
+//
+//	@Override
+//	public Response createComment(Comment dtoEntry) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
+//
+//	@Override
+//	public BlogEntry getComment(String username) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
+//
+//	@Override
+//	public BlogEntry getEntries() {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 }
