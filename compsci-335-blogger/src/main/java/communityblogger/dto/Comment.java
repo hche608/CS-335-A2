@@ -61,7 +61,8 @@ public class Comment implements Comparable<Comment> {
 	private String _content;
 	
 	@XmlElement(name = "author")
-	@XmlJavaTypeAdapter(communityblogger.jaxb.UserAdapter.class)  
+	private String _author_username;
+	//@XmlJavaTypeAdapter(communityblogger.jaxb.UserAdapter.class)  
 	private User _author;
 
 	public Comment() {
@@ -105,6 +106,22 @@ public class Comment implements Comparable<Comment> {
 	public User getAuthor() {
 		return _author;
 	}
+	
+	/**
+	 * Returns this Comment's author.
+	 * 
+	 */
+	public String getAuthorUsernames() {
+		return _author_username;
+	}
+	
+	/**
+	 * Returns this Comment's author.
+	 * 
+	 */
+	public void setAuthorUsernames(User _user) {
+		_author_username = _user.getUsername();
+	}
 
 	/**
 	 * Sets the time at which this Comment was made.
@@ -132,6 +149,7 @@ public class Comment implements Comparable<Comment> {
 	 */
 	void setAuthor(User user) {
 		_author = user;
+		setAuthorUsernames(user);
 	}
 
 	/**
