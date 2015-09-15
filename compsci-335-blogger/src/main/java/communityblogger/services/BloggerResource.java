@@ -80,7 +80,7 @@ public interface BloggerResource {
 	@POST
 	@Path("/blogEntries")
 	@Consumes("application/xml")
-	Response createEntry(BlogEntry Entry);
+	Response createEntry(@CookieParam("username") String username, BlogEntry Entry);
 
 	/**
 	 * Returns a particular Entry. The returned Entry is represented by a

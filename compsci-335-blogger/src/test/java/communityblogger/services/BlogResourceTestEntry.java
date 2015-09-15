@@ -8,6 +8,7 @@ import java.util.Set;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.Response;
 
 import org.junit.AfterClass;
@@ -105,11 +106,12 @@ public class BlogResourceTestEntry {
 	 */
 	@Test
 	public void addEntry() {
+		Cookie myCookie = new Cookie("username", "ch");
 		BlogEntry _entry = new BlogEntry("hello world!");
 		_logger.info("Creating a new Entry without time ...");
 
 		Response response = _client.target(WEB_SERVICE_URI + "/blogEntries")
-				.request().post(Entity.xml(_entry));
+				.request().cookie(myCookie).post(Entity.xml(_entry));
 		if (response.getStatus() != 201) {
 			_logger.error("Failed to create Entry; Web service responded with: "
 					+ response.getStatus());
@@ -131,7 +133,7 @@ public class BlogResourceTestEntry {
 		// returned by getId(), because the Web service assigns this when it
 		// creates a User.
 		assertEquals(_entry.getContent(), entryFromService.getContent());
-		
+
 		// Case2
 		Set<String> _keywords = new HashSet<String>();
 		_keywords.add("This");
@@ -139,11 +141,10 @@ public class BlogResourceTestEntry {
 		_keywords.add("a");
 		_keywords.add("key");
 		_keywords.add("word");
-		_entry = new BlogEntry("hello world!", _keywords);
+		_entry = new BlogEntry("This is a key word!!!", _keywords);
 		_logger.info("Creating a new Entry without time ...");
 
-		response = _client.target(WEB_SERVICE_URI + "/blogEntries")
-				.request().post(Entity.xml(_entry));
+		response = _client.target(WEB_SERVICE_URI + "/blogEntries").request().cookie(myCookie).post(Entity.xml(_entry));
 		if (response.getStatus() != 201) {
 			_logger.error("Failed to create Entry; Web service responded with: "
 					+ response.getStatus());
@@ -165,7 +166,6 @@ public class BlogResourceTestEntry {
 		// returned by getId(), because the Web service assigns this when it
 		// creates a User.
 		assertEquals(_entry.getContent(), entryFromService.getContent());
-		
-		
+
 	}
 }

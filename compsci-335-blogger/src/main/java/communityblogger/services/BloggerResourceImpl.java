@@ -80,8 +80,7 @@ public class BloggerResourceImpl implements BloggerResource {
 	 *            the unique identifier of the User.
 	 * 
 	 */
-	public communityblogger.dto.User getUser(
-			@PathParam("username") String username) {
+	public communityblogger.dto.User getUser(String username) {
 		// Lookup the User within the in-memory data structure.
 
 		final User _user = _users.get(username);
@@ -97,9 +96,20 @@ public class BloggerResourceImpl implements BloggerResource {
 		return dtoUser;
 	}
 
-	public Response createEntry(BlogEntry _entry) {
+	public Response createEntry(String username, BlogEntry _entry) {
+		// Lookup the User within the in-memory data structure.
+
+		User _user = _users.get(username);
+		_logger.debug("Lookup for user: " + _user);
+		final String _username = _user.getUsername();
+		if (_username == null) {
+			// Return a HTTP 404 response if the specified User isn't found.
+			throw new WebApplicationException(Response.Status.NOT_FOUND);
+		}
+
 		_logger.debug("Read Entry: " + _entry);
 		_entry.setId(_idCounter.incrementAndGet());
+		_user.addBlogEntry(_entry);
 		_entry.setTimePosted(DateTime.now());
 		_blogEntries.put(_entry.getId(), _entry);
 		_logger.debug("Created entry: " + _entry);

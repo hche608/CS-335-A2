@@ -68,7 +68,7 @@ public class BlogEntry {
 	private Long _id;
 
 	@XmlElement(name = "timestamp")
-	@XmlJavaTypeAdapter(value = communityblogger.jaxb.LocalDateAdapter.class)
+	//@XmlJavaTypeAdapter(value = communityblogger.jaxb.LocalDateAdapter.class)
 	private DateTime _timestamp;
 
 	@XmlElement(name = "content")
@@ -78,7 +78,7 @@ public class BlogEntry {
 	@XmlElementWrapper(name = "keywords")
 	private Set<String> _keywords;
 
-	@XmlElement(name = "user")
+	@XmlElement(name = "author")
 	private User _author;
 
 	@XmlElement(name = "comments")
