@@ -1,12 +1,19 @@
 package communityblogger.services;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.container.AsyncResponse;
+import javax.ws.rs.container.TimeoutHandler;
+import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
@@ -102,10 +109,10 @@ public class BloggerResourceImpl implements BloggerResource {
 		return dtoUser;
 	}
 
-	public Response createEntry(String username, BlogEntry _entry) {
+	public Response createEntry(Cookie userCookie, BlogEntry _entry) {
 		// Lookup the User within the in-memory data structure.
 		_logger.debug("....................................................................................");
-		User _user = _users.get(username);
+		User _user = _users.get(userCookie.getValue());
 		_logger.debug("Lookup for user: " + _user);
 		final String _username = _user.getUsername();
 		if (_username == null) {
@@ -136,11 +143,11 @@ public class BloggerResourceImpl implements BloggerResource {
 		return _entry;
 	}
 
-	public Response createComment(String username, long id,
+	public Response createComment(Cookie userCookie, long id,
 			communityblogger.dto.Comment dtoComment) {
 		// Lookup the User within the in-memory data structure.
 		_logger.debug("....................................................................................");
-		User _user = _users.get(username);
+		User _user = _users.get(userCookie.getValue());
 		_logger.debug("Lookup for user: " + _user);
 		final String _username = _user.getUsername();
 		if (_username == null) {
@@ -189,9 +196,68 @@ public class BloggerResourceImpl implements BloggerResource {
 		return dtoComments;
 	}
 
-	// @Override
-	// public BlogEntry getEntries() {
-	// // TODO Auto-generated method stub
-	// return null;
-	// }
+	public List<BlogEntry> getEntries(int index, int offset) {
+		List<BlogEntry> _entries = new ArrayList<BlogEntry>(
+				_blogEntries.values());
+		if (_blogEntries.isEmpty()) {
+			return new ArrayList<BlogEntry>();
+		} else if (offset >= _blogEntries.size()) {
+			return _entries.subList(index - 1, _blogEntries.size());
+		}
+		return _entries.subList(index - 1, index + offset - 1);
+	}
+
+	public void getFollow(final AsyncResponse asyncResponse, final long id)
+			throws InterruptedException {
+		// Lookup the Entry within the in-memory data structure.
+
+		_logger.debug("Lookup for the Entry with id: " + id);
+
+		final BlogEntry _entry = _blogEntries.get(id);
+
+		if (_entry == null) {
+			// Return a HTTP 404 response if the specified User isn't found.
+			throw new WebApplicationException(Response.Status.NOT_FOUND);
+		}
+
+		// Timeout Handler 10s
+		asyncResponse.setTimeoutHandler(new TimeoutHandler() {
+
+			@Override
+			public void handleTimeout(AsyncResponse asyncResponse) {
+				asyncResponse.resume(Response
+						.status(Response.Status.SERVICE_UNAVAILABLE)
+						.entity("Operation time out.").build());
+			}
+		});
+		asyncResponse.setTimeout(10, TimeUnit.SECONDS);
+
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				Set<communityblogger.dto.Comment> result = getFollowComments(_entry
+						.getComments());
+				asyncResponse.resume(result);
+			}
+
+			private Set<communityblogger.dto.Comment> getFollowComments(
+					Set<Comment> preComment) {
+				Set<communityblogger.dto.Comment> result = new HashSet<communityblogger.dto.Comment>();
+				// Filtering the Set<Comment>
+				final BlogEntry _entry = _blogEntries.get(id);
+
+				Set<Comment> _filtedComments = new HashSet<Comment>();
+				for (Comment c : _entry.getComments()) {
+					if (!_entry.getComments().contains(c)) {
+						_filtedComments.add(c);
+					}
+				}
+
+				// Convert the full User to a short User.
+				result = CommentMapper.toDto(_filtedComments);
+				return result;
+			}
+		}).start();
+	}
 }

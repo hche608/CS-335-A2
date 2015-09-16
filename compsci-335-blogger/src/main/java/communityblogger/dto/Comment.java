@@ -46,7 +46,7 @@ import communityblogger.domain.User;
  * ensure that any concurrent access to Comment objects is managed
  * appropriately.
  * 
- * @author Ian Warren
+ * @author Hao CHEN
  *
  */
 @XmlRootElement(name = "comment")

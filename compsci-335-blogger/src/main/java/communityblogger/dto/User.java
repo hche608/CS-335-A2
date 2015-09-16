@@ -41,7 +41,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  * Class User is not thread-safe. It is the class user's responsibility to
  * ensure that any concurrent access to User objects is managed appropriately.
  * 
- * @author Ian Warren
+ * @author Hao CHEN
  *
  */
 @XmlRootElement(name = "user")

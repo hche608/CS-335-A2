@@ -4,14 +4,11 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 
 /*
  * Use the Apache Commons library for implementing equals() and hasCode(). 
@@ -63,24 +60,24 @@ import org.joda.time.DateTime;
  */
 
 @XmlRootElement(name = "blogEntry")
-@XmlAccessorType(XmlAccessType.FIELD)
 public class BlogEntry {
 	@XmlAttribute(name = "id")
 	private Long _id;
-	
+
 	@XmlElement(name = "timestamp")
 	private DateTime _timestamp;
-	
+
 	@XmlElement(name = "content")
 	private String _content;
-	
-	@XmlElement(name="keyword", type = String.class)
-	@XmlElementWrapper(name="keywords")
+
+	@XmlElement(name = "keyword", type = String.class)
+	@XmlElementWrapper(name = "keywords")
 	private Set<String> _keywords;
-	
+
 	@XmlElement(name = "author")
-	@XmlJavaTypeAdapter(communityblogger.jaxb.UserAdapter.class)  
+	@XmlJavaTypeAdapter(communityblogger.jaxb.UserAdapter.class)
 	private User _author;
+
 	private Set<Comment> _comments;
 
 	/**

@@ -1,19 +1,23 @@
 package communityblogger.services;
 
+import java.util.List;
 import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.MediaType;
 
 import communityblogger.domain.BlogEntry;
 
@@ -42,7 +46,7 @@ public interface BloggerResource {
 	 * operation can be invoked prior to executing each unit test.
 	 */
 	@PUT
-	@Produces("application/xml")
+	@Produces(MediaType.APPLICATION_XML)
 	void initialiseContent();
 
 	/**
@@ -54,7 +58,7 @@ public interface BloggerResource {
 	 */
 	@POST
 	@Path("/users")
-	@Consumes("application/xml")
+	@Consumes(MediaType.APPLICATION_XML)
 	Response createUser(communityblogger.dto.User dtoUser);
 
 	/**
@@ -67,7 +71,7 @@ public interface BloggerResource {
 	 */
 	@GET
 	@Path("/users/{username}")
-	@Produces("application/xml")
+	@Produces(MediaType.APPLICATION_XML)
 	communityblogger.dto.User getUser(@PathParam("username") String username);
 
 	/**
@@ -79,8 +83,9 @@ public interface BloggerResource {
 	 */
 	@POST
 	@Path("/blogEntries")
-	@Consumes("application/xml")
-	Response createEntry(@CookieParam("username") String username, BlogEntry Entry);
+	@Consumes(MediaType.APPLICATION_XML)
+	Response createEntry(@CookieParam("username") Cookie userCookie,
+			BlogEntry Entry);
 
 	/**
 	 * Returns a particular Entry. The returned Entry is represented by a
@@ -92,45 +97,64 @@ public interface BloggerResource {
 	 */
 	@GET
 	@Path("/blogEntries/{id}")
-	@Produces("application/xml")
+	@Produces(MediaType.APPLICATION_XML)
 	BlogEntry getEntry(@PathParam("id") long id);
-	
-	 /**
+
+	/**
 	 * Adds a new Comment to the system. The state of the new Comment is
-	 described by
-	 * a communityblogger.dto.Comment object.
+	 * described by a communityblogger.dto.Comment object.
 	 *
 	 * @param dtoComment
-	 * the Comment data included in the HTTP request body.
+	 *            the Comment data included in the HTTP request body.
 	 */
-	 @POST
-	 @Path("/blogEntries/{id}/comments")
-	 @Consumes("application/xml")
-	 Response createComment(@CookieParam("username") String username, @PathParam("id") long id, communityblogger.dto.Comment dtoComment);
-	
-	 /**
+	@POST
+	@Path("/blogEntries/{id}/comments")
+	@Consumes(MediaType.APPLICATION_XML)
+	Response createComment(@CookieParam("username") Cookie userCookie,
+			@PathParam("id") long id, communityblogger.dto.Comment dtoComment);
+
+	/**
 	 * Returns a particular Comment. The returned Comment is represented by a
 	 * communityblogger.dto.Comment object.
 	 *
 	 * @param id
-	 * the unique identifier of the Comment.
+	 *            the unique identifier of the Comment.
 	 *
 	 */
-	 @GET
-	 @Path("/blogEntries/{id}/comments")
-	 @Produces("application/xml")
-	 Set<communityblogger.dto.Comment> getComments(@PathParam("id") long id);
-	//
-	// /**
-	// * Returns all particular Entries. The returned Entry is represented by a
-	// * communityblogger.dto.BlogEntry object.
-	// *
-	// * @param id
-	// * the unique identifier of the Entry.
-	// *
-	// */
-	// @GET
-	// @Path("/blogEntries")
-	// @Produces("application/xml")
-	// BlogEntry getEntries();
+	@GET
+	@Path("/blogEntries/{id}/comments")
+	@Produces(MediaType.APPLICATION_XML)
+	Set<communityblogger.dto.Comment> getComments(@PathParam("id") long id);
+
+	/**
+	 * Returns all particular Entries. The returned Entry is represented by a
+	 * Set<communityblogger.dto.BlogEntry> object.
+	 *
+	 * @param index
+	 *            the start index of the Entry.
+	 * @param offset
+	 *            the offset.
+	 *
+	 *            URI Pattern : “blogEntries/query?index=1&offset=10”
+	 */
+	@GET
+	@Path("/blogEntries/query")
+	@Produces(MediaType.APPLICATION_XML)
+	List<BlogEntry> getEntries(
+			@DefaultValue("1") @QueryParam("index") int index,
+			@DefaultValue("10") @QueryParam("offset") int offset);
+
+	/**
+	 * Returns a particular Comment. The returned Comment is represented by a
+	 * Set<communityblogger.dto.Comment> object.
+	 *
+	 * @param id
+	 *            the unique identifier of the Comment.
+	 *
+	 */
+	@GET
+	@Path("/blogEntries/{id}/follow")
+	// @Produces(MediaType.APPLICATION_XML)
+	void getFollow(@Suspended final AsyncResponse asyncResponse,
+			@PathParam("id") final long id) throws InterruptedException;
 }
