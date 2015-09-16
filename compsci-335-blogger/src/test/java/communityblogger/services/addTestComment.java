@@ -38,7 +38,7 @@ public class addTestComment {
 	@Test
 	public void addComments() {
 		Cookie myCookie = new Cookie("username", "ch");
-		Comment _comment1 = new Comment("This is comment1", DateTime.now());
+		Comment _comment1 = new Comment("New Commment1", DateTime.now());
 
 		_logger.info("Creating a new Comment ...");
 
@@ -56,7 +56,7 @@ public class addTestComment {
 		response.close();
 
 		// Case 2
-		Comment _comment2 = new Comment("This is comment2", DateTime.now());
+		Comment _comment2 = new Comment("New Commment2", DateTime.now());
 
 		_logger.info("Creating a new Comment ...");
 
