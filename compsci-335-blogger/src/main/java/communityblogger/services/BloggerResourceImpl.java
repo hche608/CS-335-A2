@@ -14,6 +14,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.TimeoutHandler;
 import javax.ws.rs.core.Cookie;
+import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
@@ -44,7 +45,7 @@ public class BloggerResourceImpl implements BloggerResource {
 	 */
 	private Map<String, User> _users;
 	private Map<Long, BlogEntry> _blogEntries;
-	private Map<Long, AsyncResponse> _subscribe;
+	private List<Subscribe> _subscribes;
 	private AtomicLong _idCounter;
 
 	public BloggerResourceImpl() {
@@ -59,7 +60,7 @@ public class BloggerResourceImpl implements BloggerResource {
 		// the same same as when the Web service was initially created.
 		_users = new ConcurrentHashMap<String, User>();
 		_blogEntries = new ConcurrentHashMap<Long, BlogEntry>();
-		_subscribe = new ConcurrentHashMap<Long, AsyncResponse>();
+		_subscribes = new ArrayList<Subscribe>();
 		_idCounter = new AtomicLong();
 		_logger.debug("Server reloaded.");
 	}
@@ -171,9 +172,10 @@ public class BloggerResourceImpl implements BloggerResource {
 		_user.addComment(_comment);
 
 		// notice asyncResponse in the map
-		if (_subscribe.containsKey(id)) {
-			_subscribe.get(id).resume(dtoComment);
+		if (_subscribes.(id)) {
+			pushSubscribe(id, _entry.getComments());
 		}
+
 		_logger.debug("Created Comment: " + _comment);
 		return Response.created(URI.create("/blogger/blogEntries/" + id + "/comments")).build();
 
@@ -204,7 +206,8 @@ public class BloggerResourceImpl implements BloggerResource {
 		return _entries.subList(index - 1, index + offset - 1);
 	}
 
-	public void getFollow(final AsyncResponse asyncResponse, final long id) throws InterruptedException {
+	public void getFollow(Cookie userCookie, final AsyncResponse asyncResponse, final long id)
+			throws InterruptedException {
 		// Lookup the Entry within the in-memory data structure.
 
 		_logger.debug("Lookup for the Entry with id: " + id);
@@ -215,7 +218,7 @@ public class BloggerResourceImpl implements BloggerResource {
 			// Return a HTTP 404 response if the specified User isn't found.
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}
-		_subscribe.put(id, asyncResponse);
+		_subscribes.add(new Subscribe(id, userCookie.getVersion(), asyncResponse));
 		// // Timeout Handler 10s
 		// asyncResponse.setTimeoutHandler(new TimeoutHandler() {
 		//
@@ -256,5 +259,44 @@ public class BloggerResourceImpl implements BloggerResource {
 		// return result;
 		// }
 		// }).start();
+
+	}
+
+	private void pushSubscribe(long id, Set<Comment> comments) {
+		List<Comment> _subscribe_comments = new ArrayList<Comment>(comments);
+
+		NewCookie cookie = new NewCookie("lastreportid", new Integer(_subscribe_comments.size()).toString());
+
+		Set<communityblogger.dto.Comment> entity = new HashSet<communityblogger.dto.Comment>();
+		for (Comment c : _subscribe_comments.subList(_subscribes.get(id).getLastReportId(),
+				_subscribe_comments.size())) {
+			entity.add(CommentMapper.toDto(c));
+		}
+		//_subscribes.get(id).getAR().resume(Response.ok(entity).cookie(cookie));
+	}
+
+	class Subscribe {
+		private long _id;
+		private int _last_report_id;
+		private AsyncResponse _asyncResponse;
+
+		// constructors, getters, setters etc
+		public Subscribe(long id, int last_report_id, AsyncResponse asyncResponse) {
+			_id = id;
+			_last_report_id = last_report_id;
+			_asyncResponse = asyncResponse;
+		}
+
+		public long getId() {
+			return _id;
+		}
+
+		public int getLastReportId() {
+			return _last_report_id;
+		}
+
+		public AsyncResponse getAR() {
+			return _asyncResponse;
+		}
 	}
 }
