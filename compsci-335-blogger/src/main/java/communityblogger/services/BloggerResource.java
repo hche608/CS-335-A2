@@ -109,6 +109,7 @@ public interface BloggerResource {
 	 */
 	@POST
 	@Path("/blogEntries/{id}/comments")
+	@Produces(MediaType.APPLICATION_XML)
 	@Consumes(MediaType.APPLICATION_XML)
 	Response createComment(@CookieParam("username") Cookie userCookie,
 			@PathParam("id") long id, communityblogger.dto.Comment dtoComment);
@@ -135,7 +136,7 @@ public interface BloggerResource {
 	 * @param offset
 	 *            the offset.
 	 *
-	 *            URI Pattern : “blogEntries/query?index=1&offset=10”
+	 *            URI Pattern : ï¿½blogEntries/query?index=1&offset=10ï¿½
 	 */
 	@GET
 	@Path("/blogEntries/query")
@@ -154,7 +155,7 @@ public interface BloggerResource {
 	 */
 	@GET
 	@Path("/blogEntries/{id}/follow")
-	// @Produces(MediaType.APPLICATION_XML)
+	@Produces(MediaType.APPLICATION_XML)
 	void getFollow(@Suspended final AsyncResponse asyncResponse,
 			@PathParam("id") final long id) throws InterruptedException;
 }
