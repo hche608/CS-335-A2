@@ -64,11 +64,17 @@ public class BloggerResourceImpl implements BloggerResource {
 	 *            the User data included in the HTTP request body.
 	 */
 	public Response createUser(communityblogger.dto.User dtoUser) {
+
 		_logger.debug("....................................................................................");
 		_logger.debug("Read User: " + dtoUser);
+		final String dtoUsername = dtoUser.getUsername();
+		// Check if the username existed in database
+		if (_users.get(dtoUsername) != null) {
+			// Return a HTTP 409 response if the specified User is found.
+			throw new WebApplicationException(Response.Status.CONFLICT);
+		}
 		User _user = UserMapper.toDomainModel(dtoUser);
 		_users.put(_user.getUsername(), _user);
-
 		_logger.debug("Created user: " + _user);
 		return Response.created(
 				URI.create("/blogger/users/" + _user.getUsername())).build();
@@ -86,13 +92,11 @@ public class BloggerResourceImpl implements BloggerResource {
 		// Lookup the User within the in-memory data structure.
 		_logger.debug("....................................................................................");
 		final User _user = _users.get(username);
-		_logger.debug("Lookup for user: " + _user);
-		final String _username = _user.getUsername();
-		if (_username == null) {
+		if (_user == null) {
 			// Return a HTTP 404 response if the specified User isn't found.
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}
-
+		_logger.debug("Lookup for user: " + _user);
 		// Convert the full User to a short User.
 		communityblogger.dto.User dtoUser = UserMapper.toDto(_user);
 		return dtoUser;
@@ -105,10 +109,10 @@ public class BloggerResourceImpl implements BloggerResource {
 		_logger.debug("Lookup for user: " + _user);
 		final String _username = _user.getUsername();
 		if (_username == null) {
-			// Return a HTTP 404 response if the specified User isn't found.
-			throw new WebApplicationException(Response.Status.NOT_FOUND);
+			// Return a HTTP 412 response if the precondition failed.
+			throw new WebApplicationException(
+					Response.Status.PRECONDITION_FAILED);
 		}
-
 		_logger.debug("Read Entry: " + _entry);
 		_entry.setId(_idCounter.incrementAndGet());
 		_user.addBlogEntry(_entry);
@@ -117,16 +121,16 @@ public class BloggerResourceImpl implements BloggerResource {
 		_logger.debug("Created entry: " + _entry);
 		return Response.created(
 				URI.create("/blogger/blogEntries/" + _entry.getId())).build();
+
 	}
 
 	public BlogEntry getEntry(long id) {
 		// Lookup the Entry within the in-memory data structure.
 		_logger.debug("....................................................................................");
 		_logger.debug("Lookup for the Entry with id: " + id);
-
 		final BlogEntry _entry = _blogEntries.get(id);
 		if (_entry == null) {
-			// Return a HTTP 404 response if the specified User isn't found.
+			// Return a HTTP 404 response if the specified Entry isn't found.
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}
 		return _entry;
@@ -140,8 +144,9 @@ public class BloggerResourceImpl implements BloggerResource {
 		_logger.debug("Lookup for user: " + _user);
 		final String _username = _user.getUsername();
 		if (_username == null) {
-			// Return a HTTP 404 response if the specified User isn't found.
-			throw new WebApplicationException(Response.Status.NOT_FOUND);
+			// Return a HTTP 412 response if the precondition failed.
+			throw new WebApplicationException(
+					Response.Status.PRECONDITION_FAILED);
 		}
 
 		// Lookup the Entry with in the in-memory data structure.
@@ -149,7 +154,7 @@ public class BloggerResourceImpl implements BloggerResource {
 
 		BlogEntry _entry = _blogEntries.get(id);
 		if (_entry == null) {
-			// Return a HTTP 404 response if the specified User isn't found.
+			// Return a HTTP 404 response if the specified Entry isn't found.
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}
 		// Convert data to object

@@ -54,15 +54,14 @@ import communityblogger.domain.User;
 public class Comment implements Comparable<Comment> {
 
 	@XmlElement(name = "timestamp")
-	@XmlJavaTypeAdapter(communityblogger.jaxb.DateTimeAdapter.class) 
+	@XmlJavaTypeAdapter(communityblogger.jaxb.DateTimeAdapter.class)
 	private DateTime _timestamp;
-	 
+
 	@XmlElement(name = "content")
 	private String _content;
-	
+
 	@XmlElement(name = "author")
-	private String _author_username;
-	//@XmlJavaTypeAdapter(communityblogger.jaxb.UserAdapter.class)  
+	@XmlJavaTypeAdapter(communityblogger.jaxb.UserAdapter.class)
 	private User _author;
 
 	public Comment() {
@@ -79,6 +78,12 @@ public class Comment implements Comparable<Comment> {
 	 * 
 	 */
 	public Comment(String content, DateTime timestamp) {
+		_content = content;
+		_timestamp = timestamp;
+	}
+
+	public Comment(String content, DateTime timestamp, User author) {
+		_author = author;
 		_content = content;
 		_timestamp = timestamp;
 	}
@@ -105,22 +110,6 @@ public class Comment implements Comparable<Comment> {
 	 */
 	public User getAuthor() {
 		return _author;
-	}
-	
-	/**
-	 * Returns this Comment's author.
-	 * 
-	 */
-	public String getAuthorUsernames() {
-		return _author_username;
-	}
-	
-	/**
-	 * Returns this Comment's author.
-	 * 
-	 */
-	public void setAuthorUsernames(User _user) {
-		_author_username = _user.getUsername();
 	}
 
 	/**
@@ -149,7 +138,6 @@ public class Comment implements Comparable<Comment> {
 	 */
 	void setAuthor(User user) {
 		_author = user;
-		setAuthorUsernames(user);
 	}
 
 	/**

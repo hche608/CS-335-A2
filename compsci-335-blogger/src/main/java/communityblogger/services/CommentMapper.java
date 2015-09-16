@@ -15,8 +15,7 @@ public class CommentMapper {
 
 	static communityblogger.dto.Comment toDto(Comment _comment) {
 		communityblogger.dto.Comment dtoComment = new communityblogger.dto.Comment(
-				_comment.getContent(), _comment.getTimePosted());
-		dtoComment.setAuthorUsernames(_comment.getAuthor());
+				_comment.getContent(), _comment.getTimePosted(), _comment.getAuthor());
 		return dtoComment;
 	}
 
