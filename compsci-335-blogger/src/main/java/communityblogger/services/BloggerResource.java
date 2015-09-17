@@ -1,7 +1,6 @@
 package communityblogger.services;
 
 import java.util.List;
-import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
@@ -84,7 +83,8 @@ public interface BloggerResource {
 	@POST
 	@Path("/blogEntries")
 	@Consumes(MediaType.APPLICATION_XML)
-	Response createEntry(@CookieParam("username") Cookie userCookie, BlogEntry Entry);
+	Response createEntry(@CookieParam("username") Cookie userCookie,
+			BlogEntry Entry);
 
 	/**
 	 * Returns a particular Entry. The returned Entry is represented by a
@@ -110,8 +110,9 @@ public interface BloggerResource {
 	@Path("/blogEntries/{id}/comments")
 	@Produces(MediaType.APPLICATION_XML)
 	@Consumes(MediaType.APPLICATION_XML)
-	Response createComment(@CookieParam("username") Cookie userCookie, @PathParam("id") long id,
-			communityblogger.dto.Comment dtoComment) throws InterruptedException;
+	Response createComment(@CookieParam("username") Cookie userCookie,
+			@PathParam("id") long id, communityblogger.dto.Comment dtoComment)
+			throws InterruptedException;
 
 	/**
 	 * Returns a particular Comment. The returned Comment is represented by a
@@ -124,7 +125,7 @@ public interface BloggerResource {
 	@GET
 	@Path("/blogEntries/{id}/comments")
 	@Produces(MediaType.APPLICATION_XML)
-	Set<communityblogger.dto.Comment> getComments(@PathParam("id") long id);
+	List<communityblogger.dto.Comment> getComments(@PathParam("id") long id);
 
 	/**
 	 * Returns all particular Entries. The returned Entry is represented by a
@@ -140,7 +141,8 @@ public interface BloggerResource {
 	@GET
 	@Path("/blogEntries/query")
 	@Produces(MediaType.APPLICATION_XML)
-	List<BlogEntry> getEntries(@DefaultValue("1") @QueryParam("index") int index,
+	List<BlogEntry> getEntries(
+			@DefaultValue("1") @QueryParam("index") int index,
 			@DefaultValue("10") @QueryParam("offset") int offset);
 
 	/**
@@ -154,6 +156,7 @@ public interface BloggerResource {
 	@GET
 	@Path("/blogEntries/{id}/follow")
 	@Produces(MediaType.APPLICATION_XML)
-	void getFollow(@CookieParam("lastreportid") Cookie userCookie, @Suspended final AsyncResponse asyncResponse,
+	void getFollow(@CookieParam("lastreportid") Cookie userCookie,
+			@Suspended final AsyncResponse asyncResponse,
 			@PathParam("id") final long id) throws InterruptedException;
 }

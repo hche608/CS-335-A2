@@ -1,8 +1,5 @@
 package communityblogger.services;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import communityblogger.domain.Comment;
 
 public class CommentMapper {
@@ -20,11 +17,4 @@ public class CommentMapper {
 		return dtoComment;
 	}
 
-	static Set<communityblogger.dto.Comment> toDto(Set<Comment> _comments) {
-		Set<communityblogger.dto.Comment> dtoComments = new HashSet<communityblogger.dto.Comment>();
-		for (Comment c : _comments) {
-			dtoComments.add(CommentMapper.toDto(c));
-		}
-		return dtoComments;
-	}
 }

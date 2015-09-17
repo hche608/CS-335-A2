@@ -2,6 +2,7 @@ package communityblogger.services;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.TimeoutHandler;
 import javax.ws.rs.core.Cookie;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 
@@ -188,7 +190,7 @@ public class BloggerResourceImpl implements BloggerResource {
 
 	}
 
-	public Set<communityblogger.dto.Comment> getComments(long id) {
+	public List<communityblogger.dto.Comment> getComments(long id) {
 		// Lookup the Entry within the in-memory data structure.
 
 		_logger.debug("Lookup for the Entry with id: " + id);
@@ -199,8 +201,13 @@ public class BloggerResourceImpl implements BloggerResource {
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}
 		// Convert the full User to a short User.
-		Set<communityblogger.dto.Comment> dtoComments = CommentMapper
-				.toDto(_entry.getComments());
+
+		List<communityblogger.dto.Comment> dtoComments = new ArrayList<communityblogger.dto.Comment>();
+		for (Comment c : _entry.getComments()) {
+			dtoComments.add(CommentMapper.toDto(c));
+		}
+
+		Collections.sort(dtoComments);
 		return dtoComments;
 	}
 
@@ -218,23 +225,31 @@ public class BloggerResourceImpl implements BloggerResource {
 	public void getFollow(Cookie userCookie, final AsyncResponse asyncResponse,
 			final long id) throws InterruptedException {
 		// Lookup the Entry within the in-memory data structure.
-
+		int _lastReportId = 0;
+		if (userCookie != null) {
+			_lastReportId = Integer.parseInt(userCookie.getValue());
+		} else {
+			_lastReportId = 0;
+		}
 		_logger.debug("Lookup for the Entry with id: " + id);
-
+		_logger.debug("last Report ID: " + _lastReportId);
 		final BlogEntry _entry = _blogEntries.get(id);
 
 		if (_entry == null) {
 			// Return a HTTP 404 response if the specified User isn't found.
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}
-		List<Subscribe> _subscribe = new ArrayList<Subscribe>();
+
+		Subscribe _s = new Subscribe(id, _lastReportId, asyncResponse);
+		List<Subscribe> _subscribeList;
 		if (_subscribes.containsKey(id)) {
-			_subscribe = _subscribes.get(id);
+			_subscribeList = _subscribes.get(id);
+		} else {
+			_subscribeList = new ArrayList<Subscribe>();
 		}
 
-		_subscribe
-				.add(new Subscribe(id, userCookie.getVersion(), asyncResponse));
-		_subscribes.put(id, _subscribe);
+		_subscribeList.add(_s);
+		_subscribes.put(id, _subscribeList);
 
 		// // Timeout Handler 10s
 		// asyncResponse.setTimeoutHandler(new TimeoutHandler() {
@@ -248,35 +263,6 @@ public class BloggerResourceImpl implements BloggerResource {
 		// });
 		// asyncResponse.setTimeout(10, TimeUnit.SECONDS);
 
-		// new Thread(new Runnable() {
-		//
-		// @Override
-		// public void run() {
-		// Set<communityblogger.dto.Comment> result = getFollowComments(_entry
-		// .getComments());
-		// asyncResponse.resume(result);
-		// }
-		//
-		// private Set<communityblogger.dto.Comment> getFollowComments(
-		// Set<Comment> preComment) {
-		// Set<communityblogger.dto.Comment> result = new
-		// HashSet<communityblogger.dto.Comment>();
-		// // Filtering the Set<Comment>
-		// final BlogEntry _entry = _blogEntries.get(id);
-		//
-		// Set<Comment> _filtedComments = new HashSet<Comment>();
-		// for (Comment c : _entry.getComments()) {
-		// if (!_entry.getComments().contains(c)) {
-		// _filtedComments.add(c);
-		// }
-		// }
-		//
-		// // Convert the full User to a short User.
-		// result = CommentMapper.toDto(_filtedComments);
-		// return result;
-		// }
-		// }).start();
-
 	}
 
 	private void pushSubscription(long id, Set<Comment> comments) {
@@ -285,14 +271,17 @@ public class BloggerResourceImpl implements BloggerResource {
 		NewCookie cookie = new NewCookie("lastreportid", new Integer(
 				_comments.size()).toString());
 
-		Set<communityblogger.dto.Comment> entity = new HashSet<communityblogger.dto.Comment>();
-
 		for (Subscribe s : _subscribes.get(id)) {
+			List<communityblogger.dto.Comment> _dtoComments = new ArrayList<communityblogger.dto.Comment>();
 			for (Comment c : _comments.subList(s.getLastReportId(),
 					_comments.size())) {
-				entity.add(CommentMapper.toDto(c));
+				_dtoComments.add(CommentMapper.toDto(c));
 			}
-			s.getAR().resume(Response.ok(entity).cookie(cookie));
+			Collections.sort(_dtoComments);
+			GenericEntity<List<communityblogger.dto.Comment>> list = new GenericEntity<List<communityblogger.dto.Comment>>(
+					_dtoComments) {
+			};
+			s.getAR().resume(Response.ok(list).cookie(cookie).build());
 		}
 		_subscribes.remove(id);
 	}
