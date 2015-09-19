@@ -3,17 +3,14 @@ package communityblogger.services;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.AsyncResponse;
-import javax.ws.rs.container.TimeoutHandler;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.NewCookie;
@@ -35,8 +32,7 @@ import org.joda.time.DateTime;
 public class BloggerResourceImpl implements BloggerResource {
 
 	// Setup a Logger.
-	private static Logger _logger = LoggerFactory
-			.getLogger(BloggerResourceImpl.class);
+	private static Logger _logger = LoggerFactory.getLogger(BloggerResourceImpl.class);
 
 	/*
 	 * Possible data structures to store the domain model objects. _users is a
@@ -78,7 +74,6 @@ public class BloggerResourceImpl implements BloggerResource {
 	public Response createUser(communityblogger.dto.User dtoUser) {
 
 		_logger.debug("....................................................................................");
-		_logger.debug("Read User: " + dtoUser);
 		final String dtoUsername = dtoUser.getUsername();
 		// Check if the username existed in database
 		if (_users.get(dtoUsername) != null) {
@@ -88,8 +83,7 @@ public class BloggerResourceImpl implements BloggerResource {
 		User _user = UserMapper.toDomainModel(dtoUser);
 		_users.put(_user.getUsername(), _user);
 		_logger.debug("Created user: " + _user);
-		return Response.created(
-				URI.create("/blogger/users/" + _user.getUsername())).build();
+		return Response.created(URI.create("/blogger/users/" + _user.getUsername())).build();
 	}
 
 	/**
@@ -118,12 +112,10 @@ public class BloggerResourceImpl implements BloggerResource {
 		// Lookup the User within the in-memory data structure.
 		_logger.debug("....................................................................................");
 		User _user = _users.get(userCookie.getValue());
-		_logger.debug("Lookup for user: " + _user);
 		final String _username = _user.getUsername();
 		if (_username == null) {
 			// Return a HTTP 412 response if the precondition failed.
-			throw new WebApplicationException(
-					Response.Status.PRECONDITION_FAILED);
+			throw new WebApplicationException(Response.Status.PRECONDITION_FAILED);
 		}
 		_logger.debug("Read Entry: " + _entry);
 		_entry.setId(_idCounter.incrementAndGet());
@@ -131,8 +123,7 @@ public class BloggerResourceImpl implements BloggerResource {
 		_entry.setTimePosted(DateTime.now());
 		_blogEntries.put(_entry.getId(), _entry);
 		_logger.debug("Created entry: " + _entry);
-		return Response.created(
-				URI.create("/blogger/blogEntries/" + _entry.getId())).build();
+		return Response.created(URI.create("/blogger/blogEntries/" + _entry.getId())).build();
 
 	}
 
@@ -148,17 +139,14 @@ public class BloggerResourceImpl implements BloggerResource {
 		return _entry;
 	}
 
-	public Response createComment(Cookie userCookie, long id,
-			communityblogger.dto.Comment dtoComment) {
+	public Response createComment(Cookie userCookie, long id, communityblogger.dto.Comment dtoComment) {
 		// Lookup the User within the in-memory data structure.
 		_logger.debug("....................................................................................");
 		User _user = _users.get(userCookie.getValue());
-		_logger.debug("Lookup for user: " + _user);
 		final String _username = _user.getUsername();
 		if (_username == null) {
 			// Return a HTTP 412 response if the precondition failed.
-			throw new WebApplicationException(
-					Response.Status.PRECONDITION_FAILED);
+			throw new WebApplicationException(Response.Status.PRECONDITION_FAILED);
 		}
 
 		// Lookup the Entry with in the in-memory data structure.
@@ -185,8 +173,7 @@ public class BloggerResourceImpl implements BloggerResource {
 		}
 
 		_logger.debug("Created Comment: " + _comment);
-		return Response.created(
-				URI.create("/blogger/blogEntries/" + id + "/comments")).build();
+		return Response.created(URI.create("/blogger/blogEntries/" + id + "/comments")).build();
 
 	}
 
@@ -212,8 +199,7 @@ public class BloggerResourceImpl implements BloggerResource {
 	}
 
 	public List<BlogEntry> getEntries(int index, int offset) {
-		List<BlogEntry> _entries = new ArrayList<BlogEntry>(
-				_blogEntries.values());
+		List<BlogEntry> _entries = new ArrayList<BlogEntry>(_blogEntries.values());
 		if (_blogEntries.isEmpty()) {
 			return new ArrayList<BlogEntry>();
 		} else if (offset >= _blogEntries.size()) {
@@ -222,8 +208,8 @@ public class BloggerResourceImpl implements BloggerResource {
 		return _entries.subList(index - 1, index + offset - 1);
 	}
 
-	public void getFollow(Cookie userCookie, final AsyncResponse asyncResponse,
-			final long id) throws InterruptedException {
+	public void getFollow(Cookie userCookie, final AsyncResponse asyncResponse, final long id)
+			throws InterruptedException {
 		// Lookup the Entry within the in-memory data structure.
 		int _lastReportId = 0;
 		if (userCookie != null) {
@@ -268,13 +254,11 @@ public class BloggerResourceImpl implements BloggerResource {
 	private void pushSubscription(long id, Set<Comment> comments) {
 		List<Comment> _comments = new ArrayList<Comment>(comments);
 
-		NewCookie cookie = new NewCookie("lastreportid", new Integer(
-				_comments.size()).toString());
+		NewCookie cookie = new NewCookie("lastreportid", new Integer(_comments.size()).toString());
 
 		for (Subscribe s : _subscribes.get(id)) {
 			List<communityblogger.dto.Comment> _dtoComments = new ArrayList<communityblogger.dto.Comment>();
-			for (Comment c : _comments.subList(s.getLastReportId(),
-					_comments.size())) {
+			for (Comment c : _comments.subList(s.getLastReportId(), _comments.size())) {
 				_dtoComments.add(CommentMapper.toDto(c));
 			}
 			Collections.sort(_dtoComments);
@@ -291,8 +275,7 @@ public class BloggerResourceImpl implements BloggerResource {
 		private int _last_report_id;
 		private AsyncResponse _asyncResponse;
 
-		public Subscribe(long id, int last_report_id,
-				AsyncResponse asyncResponse) {
+		public Subscribe(long id, int last_report_id, AsyncResponse asyncResponse) {
 			_id = id;
 			_last_report_id = last_report_id;
 			_asyncResponse = asyncResponse;
